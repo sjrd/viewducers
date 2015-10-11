@@ -95,6 +95,7 @@ abstract class StagedCollectionOps[E] {
 }
 object StagedCollectionOps {
   /** Create a new set of staged operations against an original collection. */
+  @inline
   def apply[E](collection: GenTraversableOnce[E]): StagedCollectionOps[E] =
     new SimpleStagedCollectionOps[E, E](collection, IdentityTransducer[E]())
 }
@@ -102,6 +103,7 @@ object StagedCollectionOps {
   *
   * We use this class to *hide* the original source element type from the type signatures.
   */
+@inline
 private[collections] final class SimpleStagedCollectionOps[Origin, Next](
   override val source: GenTraversableOnce[Origin],
   override val ops: Transducer[Origin, Next]

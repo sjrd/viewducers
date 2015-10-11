@@ -5,6 +5,10 @@ import View.withExtensions
 
 class ViewSpec extends FunSuite with Matchers {
   test("count") {
+    doCount()
+  }
+
+  def doCount(): Unit = {
     val orig = List(1,2,3,4)
     val scalaView = orig.view.count(_ % 2 == 0)
     val ourView = orig.stagedView.count(_ % 2 == 0)
@@ -26,6 +30,10 @@ class ViewSpec extends FunSuite with Matchers {
   }
 
   test("drop") {
+    doDrop()
+  }
+
+  def doDrop(): Unit = {
     val orig = (1 to 20).to[scala.collection.mutable.ArrayBuffer]
     val scalaView = orig.view.drop(10).force
     val ourView = orig.stagedView.drop(10).force

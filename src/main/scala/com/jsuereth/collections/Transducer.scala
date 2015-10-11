@@ -151,12 +151,14 @@ object Transducer {
 abstract class GenericTransducer[A,B] extends Transducer[A,B]
 
 // A Joined fold over two collections.
+@inline
 private[collections] final case class JoinedTransducer[A, B, C](left: Transducer[A,B], right: Transducer[B,C]) extends Transducer[A,C] {
   override def apply[Accumulator](in: Fold[Accumulator, C]): Fold[Accumulator, A] = left(right(in))
   override def toString = s"$left -> $right"
 }
 
 
+@inline
 private[collections] final case class MapTransducer[A,B](f: A => B) extends Transducer[A,B] {
   override def apply[Accumulator](in: Fold[Accumulator, B]): Fold[Accumulator, A] = new MyFold(in)
   private class MyFold[Accumulator](in: Fold[Accumulator, B]) extends AbtractFold[Accumulator, A] {
@@ -166,6 +168,7 @@ private[collections] final case class MapTransducer[A,B](f: A => B) extends Tran
   override def toString = s"Map($f)"
 }
 
+@inline
 private[collections] final case class CollectTransducer[A,B](f: PartialFunction[A,B]) extends Transducer[A,B] {
   val lifted = f.lift
   override def apply[Accumulator](in: Fold[Accumulator, B]): Fold[Accumulator, A] = new MyFold(in)
@@ -178,6 +181,7 @@ private[collections] final case class CollectTransducer[A,B](f: PartialFunction[
   }
   override def toString = s"Collect($f)"
 }
+@inline
 private[collections] final case class FlatMapTransducer[A,B](f: A => GenTraversableOnce[B]) extends Transducer[A, B] {
   override def apply[Accumulator](in: Fold[Accumulator, B]): Fold[Accumulator, A] = new MyFold(in)
   private class MyFold[Accumulator](in: Fold[Accumulator, B]) extends AbtractFold[Accumulator, A] {
@@ -186,6 +190,7 @@ private[collections] final case class FlatMapTransducer[A,B](f: A => GenTraversa
   override def toString = s"FlatMap($f)"
 }
 
+@inline
 private[collections] final case class FilterTransducer[A](f: A => Boolean) extends Transducer[A,A] {
   // TODO - concrete class over anonymous function.
   override def apply[Accumulator](in: Fold[Accumulator, A]): Fold[Accumulator, A] = new FilterFold(in)
@@ -198,11 +203,13 @@ private[collections] final case class FilterTransducer[A](f: A => Boolean) exten
   override def toString = s"Filter($f)"
 }
 
+@inline
 private[collections] final case class IdentityTransducer[A]() extends Transducer[A,A] {
   override def apply[Accumulator](in: Fold[Accumulator, A]): Fold[Accumulator, A] = in
   override def toString = s"identity"
 }
 
+@inline
 private[collections] final case class SliceTransducer[A](start: Int, end: Int) extends Transducer[A,A] {
 
   // NOTE: Returning two functions like this can shave ~10% off the execution speed of the non-early exit path
@@ -236,6 +243,7 @@ private[collections] final case class SliceTransducer[A](start: Int, end: Int) e
   override def toString = s"Slice($start, $end)"
 }
 
+@inline
 private[collections] final case class TakeWhileTransducer[A](f: A => Boolean) extends Transducer[A,A] {
   override def apply[Accumulator](in: Fold[Accumulator,A]): Fold[Accumulator,A] =
     new StatefulFoldFunction[Accumulator](in)
@@ -251,6 +259,7 @@ private[collections] final case class TakeWhileTransducer[A](f: A => Boolean) ex
   override def toString = s"TakeWhile($f)"
 }
 
+@inline
 private[collections] final case class DropWhileTransducer[A](f: A => Boolean) extends Transducer[A,A] {
   override def apply[Accumulator](in: Fold[Accumulator,A]): Fold[Accumulator,A] =
     new StatefulFoldFunction[Accumulator](in)
@@ -266,6 +275,7 @@ private[collections] final case class DropWhileTransducer[A](f: A => Boolean) ex
   override def toString = s"DropWhile($f)"
 }
 
+@inline
 private[collections] final case class ZipWithIndexTransducer[A]() extends Transducer[A, (A, Int)] {
   override def apply[Accumulator](in: Fold[Accumulator, (A, Int)]): Fold[Accumulator,A] =
     new StatefulFoldFunction[Accumulator](in)
@@ -281,6 +291,7 @@ private[collections] final case class ZipWithIndexTransducer[A]() extends Transd
 }
 
 // TODO - This could probably be faster..
+@inline
 private[collections] final case class InitTransducer[A]() extends Transducer[A, A] {
   override def apply[Accumulator](in: Fold[Accumulator, A]): Fold[Accumulator, A] =
     new StatefulFoldFunction[Accumulator](in)

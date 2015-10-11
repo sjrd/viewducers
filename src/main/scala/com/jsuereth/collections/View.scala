@@ -185,6 +185,7 @@ abstract class View[E, To] {
 }
 
 /** Simple implementation of view with no fancy frills. */
+@inline
 private[collections] case class SimpleView[Orig, E, To](
   underlying: StagedCollectionOps[E],
   cbf: CanBuildFrom[Orig, E, To]
@@ -200,7 +201,8 @@ object View {
     def stagedView(implicit cbf: CanBuildFrom[Repr, A, Repr]): View[A, Repr] = SimpleView[Repr, A, Repr](staged, cbf)
   }
   /** This implicit makes staged & stagedView available on all traversables. */
-  implicit def withExtensions[Repr](coll: Repr)(implicit traversable: IsTraversableLike[Repr]) =
+  @inline
+  implicit def withExtensions[Repr](coll: Repr)(implicit traversable: MyIsTraversableLike[Repr]) =
     new ExtensionMethods[traversable.A, Repr](
       StagedCollectionOps[traversable.A](traversable.conversion(coll)))
 }
