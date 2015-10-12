@@ -13,14 +13,21 @@ object Types {
 
 
   // TODO - Are we being pedantic about saving classfile size?
+  @inline
   final class BuilderFold[E, To]() extends Fold[mutable.Builder[E, To], E] {
-   def apply(acc: mutable.Builder[E, To], e: E): mutable.Builder[E, To] = acc += e
+    @inline
+    def apply(acc: mutable.Builder[E, To], e: E): mutable.Builder[E, To] = {
+      acc += e
+      acc
+    }
   }
   // This trickery avoids allocations for known pure functions.
   private val dummyAppendFold = new BuilderFold[Nothing,Nothing]()
   def appendFold[E, To] = dummyAppendFold.asInstanceOf[BuilderFold[E,To]]
 
+  @inline
   final class CountingFold[E] extends Fold[Int, E] {
+    @inline
     def apply(acc: Int, e: E) = acc + 1
   }
   private val dummyCountingFold = new CountingFold[Nothing]

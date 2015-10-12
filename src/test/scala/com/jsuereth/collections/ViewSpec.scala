@@ -15,6 +15,17 @@ class ViewSpec extends FunSuite with Matchers {
     ourView should equal(scalaView)
   }
 
+  test("filterMap") {
+    doFilterMap()
+  }
+
+  def doFilterMap(): Unit = {
+    val orig = List(1, 2, 3, 4)
+    val scalaView = orig.view.filter(_ % 2 == 0).map(_ * 3).force
+    val ourView = orig.stagedView.filter(_ % 2 == 0).map(_ * 3).force
+    ourView should equal(scalaView)
+  }
+
   test("appendMultiple") {
     val scalaView = (Vector(1,2,3).view ++ Vector(4)).force
     // TODO - ours should force too...
